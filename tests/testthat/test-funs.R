@@ -1,3 +1,151 @@
-test_that("multiplication works", {
-  expect_equal(2 * 2, 4)
+test_that("make_rank works in a standard environment", {
+  # setup
+
+  # execution
+  ranked <- make_rank(test_df)
+  res <- ranked |>
+    dplyr::filter(snp_exposure == "rs14658") |>
+    dplyr::pull(proxy_rank)
+
+  # test
+  expect_equal(res, c(1, 1, 3, 4, 5))
+})
+
+test_that("make_rank works with possible var name clashes", {
+  # setup
+  r2_proxy <- 1
+
+  # execution
+  ranked <- make_rank(test_df)
+  res <- ranked |>
+    dplyr::filter(snp_exposure == "rs14658") |>
+    dplyr::pull(proxy_rank)
+
+  # test
+  expect_equal(res, c(1, 1, 3, 4, 5))
+})
+
+
+
+
+test_that("filter_optimal_proxy works", {
+  # setup
+  ranked <- make_rank(test_df)
+
+  # execution
+  filtered <- filter_optimal_proxy(ranked)
+  proxy_rank <- filtered[["proxy_rank"]]
+
+  # test
+  expect_equal(proxy_rank, rep(1, 3))
+})
+
+
+
+
+
+
+
+
+
+
+test_that("pick_unique_proxy works", {
+  # setup
+  filtered <- test_df |>
+    make_rank() |>
+    filter_optimal_proxy()
+
+  # execution
+  distinct_proxy <- pick_unique_proxy(filtered)
+  snp_exposure_extracted <- distinct_proxy[["snp_exposure"]]
+
+  # test
+  expect_equal(snp_exposure_extracted, unique(snp_exposure_extracted))
+})
+
+
+test_that("extract_unique_optimal_proxy works as a shortcut", {
+  # setup
+  ranked <- make_rank(test_df)
+  expected <-  ranked |>
+    filter_optimal_proxy() |>
+    pick_unique_proxy()
+
+  # execution
+  obtained <- ranked |>
+    extract_unique_optimal_proxy()
+
+  # test
+  expect_equal(expected, obtained)
+})
+
+
+
+test_that("select_only_proxies works", {
+  # setup
+  unique_proxy_df <- make_rank(test_df) |>
+    extract_unique_optimal_proxy()
+
+  # execution
+  proxy_alone <- select_only_proxies(unique_proxy_df)
+
+  # test
+  expect_named(
+    proxy_alone,
+    c("snp_exposure", "snp_outcome_proxy", "proxy_rank")
+  )
+})
+
+
+
+test_that("remove_optimal_proxies works", {
+  # setup
+  ranked <- make_rank(test_df)
+  proxy_alone <- ranked |>
+    extract_unique_optimal_proxy() |>
+    select_only_proxies()
+
+  # exectution
+  res <- remove_optimal_proxies(ranked, proxy_alone)
+
+  # test
+  expect_s3_class(res, "tbl_df")
+
+  expect_named(res, names(ranked))
+
+  intersect(
+    proxy_alone[["snp_exposure"]],
+    res[["snp_exposure"]]
+  ) |>
+    expect_length(0)
+
+  intersect(
+    proxy_alone[["snp_outcome_proxy"]],
+    res[["snp_outcome_proxy"]]
+  ) |>
+    expect_length(0)
+})
+
+
+test_that("filter_optimal_proxy works on the second iteration", {
+  # setup
+  base_df <- make_rank(test_df)
+
+  first_optimals <- base_df |>
+    extract_unique_optimal_proxy() |>
+    select_only_proxies()
+  first_df <- remove_optimal_proxies(base_df, first_optimals)
+
+
+  # execution
+  second_optimals <- first_df |>
+    extract_unique_optimal_proxy() |>
+    select_only_proxies()
+  second_df <- remove_optimal_proxies(first_df, second_optimals)
+
+  # test
+  expect_s3_class(second_df, "tbl_df")
+  expect_named(second_df, names(base_df))
+
+  expect_equal(second_df[["snp_exposure"]], character())
 })
