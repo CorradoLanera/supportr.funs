@@ -45,7 +45,8 @@ make_rank <- function(data, snp_exposure, r2_proxy) {
 #' For each SNP, filter the proxies with the highest correlations
 #' measured with r2
 #'
-#' @param data (data.frame) the data containing SNPs and proxies
+#' @param data (data.frame) the data containing SNPs and proxies obtained
+#'                          after `make_rank`
 #' @param snp_proxy (character) the name of the column in `data` that
 #'                              contains the names of the proxies (
 #'                              either rs number of chromosome:position)
@@ -93,7 +94,8 @@ filter_optimal_proxies <- function(
 #'
 #' For each SNP, retrieved just one proxy among the most correlated
 #'
-#' @param data (data.frame) the data containing SNPs and proxies
+#' @param data (data.frame) the data containing SNPs and proxies obtained
+#'                          after `filter_optimal_proxies`
 #' @param snp_exposure (character) the name of the column in `data` that
 #'                                 contains the SNP (either rs number or
 #'                                 chromosome:position)
@@ -122,31 +124,82 @@ pick_unique_proxy <- function(data, snp_exposure) {
 }
 
 
-#' Title
+#' Extract the optimal proxy
 #'
-#' @param x
+#' For each SNP, collect the most correlated proxy
 #'
-#' @return
+#' @param data (data.frame) the data containing SNPs and proxies
+#'                          obtained after `make_rank`
+#' @param snp_proxy (character) the name of the column in `data` that
+#'                              contains the names of the proxies (
+#'                              either rs number of chromosome:position)
+#' @param pval_exposure (character) the name of the column in `data` that
+#'                                  contains the p-value for the
+#'                                  association between the SNP and the
+#'                                  exposure
+#' @param snp_exposure (character) the name of the column in `data` that
+#'                                 contains the SNP (either rs number or
+#'                                 chromosome:position)
+#'
+#' @return an object of class tibble
 #' @export
 #'
 #' @examples
-extract_unique_optimal_proxy <- function(x) {
-  x |>
-    filter_optimal_proxy() |>
-    pick_unique_proxy()
+#'
+#' \dontrun{
+#'
+#' test_df |>
+#'   make_rank("snp_exposure", "r2_proxy") |>
+#'   extract_unique_optimal_proxy(
+#'   "snp_proxy", "pval_exposure", "snp_exposure"
+#'   )
+#'
+#' }
+#'
+extract_unique_optimal_proxy <- function(
+  data, snp_proxy, pval_exposure, snp_exposure
+) {
+
+  assertive::assert_is_data.frame(data)
+  assertive::assert_is_character(snp_proxy)
+  assertive::assert_is_character(pval_exposure)
+  assertive::assert_is_character(snp_exposure)
+
+  data |>
+    filter_optimal_proxies(snp_proxy, pval_exposure) |>
+    pick_unique_proxy(snp_exposure)
 }
 
 
-#' Title
+#' Select SNPs and proxies
 #'
-#' @param x
+#' Select the SNPs and their proxies along with the rank based on
+#' the correlation
 #'
-#' @return
+#' @param data (data.frame) the data containing SNPs and proxies obtained
+#'                          after `extract_unique_optimal_proxy`
+#'
+#' @return an object of class tibble
 #' @export
 #'
 #' @examples
-select_only_proxies <- function(x) {
-  x |>
+#'
+#' \dontrun{
+#'
+#' test_df |>
+#'   make_rank("snp_exposure", "r2_proxy") |>
+#'   extract_unique_optimal_proxy(
+#'   "snp_proxy", "pval_exposure", "snp_exposure"
+#'   ) |>
+#'   select_snps_and_proxies()
+#'
+#' }
+#'
+select_snps_and_proxies <- function(data) {
+
+  assertive::assert_is_data.frame(data)
+
+  data |>
     dplyr::select(dplyr::starts_with("snp"), proxy_rank)
 }
 
