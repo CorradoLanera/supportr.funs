@@ -40,7 +40,7 @@ make_rank <- function(data, snp_exposure, r2_proxy) {
 }
 
 
-#' Filter best proxy
+#' Filter optimal proxies
 #'
 #' For each SNP, filter the proxies with the highest correlations
 #' measured with r2
@@ -51,7 +51,7 @@ make_rank <- function(data, snp_exposure, r2_proxy) {
 #' @export
 #'
 #' @examples
-filter_optimal_proxy <- function(
+filter_optimal_proxies <- function(
   data, snp_proxy, pval_exposure
 ) {
 
@@ -64,10 +64,10 @@ filter_optimal_proxy <- function(
 
   x |>
     dplyr::with_groups(
-      snp_outcome_proxy,
+      .data[[snp_proxy]],
       dplyr::filter,
       proxy_rank == 1, # current_min_rank,
-      pval_exposure == min(pval_exposure)
+      pval_exposure == min(.data[[pval_exposure]])
     )
 }
 
