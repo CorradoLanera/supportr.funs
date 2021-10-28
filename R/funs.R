@@ -1,12 +1,15 @@
+#' Rank the proxies based on their correlations
+#'
 #' For each SNP, rank the proxies based on their correlations measured
 #' with r2
 #'
 #' @param data (data.frame) the data containing SNPs and proxies
-#' @param snp_exposure (character) a character containing the name of
-#'                                 the SNPs (rs number or chromosome:
-#'                                 position) that need a proxy
-#' @param r2_proxy (double) the correlation between the SNP and its
-#'                          proxy measure with r2
+#' @param snp_exposure (character) the name of the column in `data` that
+#'                                 contains the SNP (either rs number or
+#'                                 chromosome:position)
+#' @param r2_proxy (double) the name of the column in `data` that
+#'                          contains the correlation between the SNP
+#'                          and its proxy measure with r2
 #'
 #' @return an object of class tibble
 #' @export
@@ -37,7 +40,10 @@ make_rank <- function(data, snp_exposure, r2_proxy) {
 }
 
 
-#' Title
+#' Filter best proxy
+#'
+#' For each SNP, filter the proxies with the highest correlations
+#' measured with r2
 #'
 #' @param x
 #'
@@ -45,7 +51,7 @@ make_rank <- function(data, snp_exposure, r2_proxy) {
 #' @export
 #'
 #' @examples
-filter_optimal_proxy <- function(x) {
+filter_optimal_proxy <- function(data, snp_outcome_proxy, pval_e) {
   message("!!! RESTART FROM HERE !!!")
   # current_min_rank <- min(x[["proxy_rank"]])
 
