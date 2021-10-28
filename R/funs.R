@@ -204,15 +204,58 @@ select_snps_and_proxies <- function(data) {
 }
 
 
+#' Remove SNPs with proxies from the initial data.frame
+#'
+#' Remove from the initial data.frame the SNPs that received a proxy
+#' (along with their proxies)
+#'
+#' @param .from (data.frame) the initial data containing all the SNPs
+#'                           and their proxies
+#' @param .optimal (data.frame) the data.frame obtained after
+#'                             `select_snps_and_proxies` that contains
+#'                             the SNPs and their associated proxies
+#' @param snp_exposure (character) the name of the column in `.from`
+#'                                 that contains the SNP (either rs
+#'                                 number or chromosome:position)
+#' @param snp_proxy (character) the name of the column in `.optimal` that
+#'                              contains the names of the proxies (
+#'                              either rs number of chromosome:position)
+#' @return an object of class tibble
+#' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#'
+#' opt_df <- test_df |>
+#'   make_rank("snp_exposure", "r2_proxy") |>
+#'   extract_unique_optimal_proxy(
+#'   "snp_proxy", "pval_exposure", "snp_exposure"
+#'   ) |>
+#'   select_snps_and_proxies()
+#'
+#' final_df <- remove_optimal_proxies(
+#'   test_df, opt_df, "snp_exposure", "snp_proxy"
+#' )
+#'
+#' }
+#'
+remove_optimal_proxies <- function(
+  .from, .optimal, snp_exposure, snp_proxy
+) {
 
-remove_optimal_proxies <- function(.from, .optimal) {
+  assertive::assert_is_data.frame(.from)
+  assertive::assert_is_data.frame(.optimal)
+  assertive::assert_is_character(snp_exposure)
+  assertive::assert_is_character(snp_proxy)
+
   .from |>
     dplyr::anti_join(
-      .optimal["snp_exposure"],
-      by = "snp_exposure"
+      .optimal[snp_exposure],
+      by = snp_exposure
     ) |>
     dplyr::anti_join(
-      .optimal["snp_outcome_proxy"],
-      by = "snp_outcome_proxy"
+      .optimal[snp_outcome_proxy],
+      by = snp_proxy
     )
 }
