@@ -2,7 +2,7 @@ test_that("make_rank works in a standard environment", {
   # setup
 
   # execution
-  ranked <- make_rank(test_df)
+  ranked <- make_rank(test_df, "snp_exposure", "r2_proxy")
   res <- ranked |>
     dplyr::filter(snp_exposure == "rs14658") |>
     dplyr::pull(proxy_rank)
@@ -16,7 +16,7 @@ test_that("make_rank works with possible var name clashes", {
   r2_proxy <- 1
 
   # execution
-  ranked <- make_rank(test_df)
+  ranked <- make_rank(test_df, "snp_exposure", "r2_proxy")
   res <- ranked |>
     dplyr::filter(snp_exposure == "rs14658") |>
     dplyr::pull(proxy_rank)
@@ -30,7 +30,7 @@ test_that("make_rank works with possible var name clashes", {
 
 test_that("filter_optimal_proxy works", {
   # setup
-  ranked <- make_rank(test_df)
+  ranked <- make_rank(test_df, "snp_exposure", "r2_proxy")
 
   # execution
   filtered <- filter_optimal_proxy(ranked)
@@ -52,7 +52,7 @@ test_that("filter_optimal_proxy works", {
 test_that("pick_unique_proxy works", {
   # setup
   filtered <- test_df |>
-    make_rank() |>
+    make_rank("snp_exposure", "r2_proxy") |>
     filter_optimal_proxy()
 
   # execution
@@ -66,7 +66,7 @@ test_that("pick_unique_proxy works", {
 
 test_that("extract_unique_optimal_proxy works as a shortcut", {
   # setup
-  ranked <- make_rank(test_df)
+  ranked <- make_rank(test_df, "snp_exposure", "r2_proxy")
   expected <-  ranked |>
     filter_optimal_proxy() |>
     pick_unique_proxy()
@@ -83,7 +83,7 @@ test_that("extract_unique_optimal_proxy works as a shortcut", {
 
 test_that("select_only_proxies works", {
   # setup
-  unique_proxy_df <- make_rank(test_df) |>
+  unique_proxy_df <- make_rank(test_df, "snp_exposure", "r2_proxy") |>
     extract_unique_optimal_proxy()
 
   # execution
@@ -100,7 +100,7 @@ test_that("select_only_proxies works", {
 
 test_that("remove_optimal_proxies works", {
   # setup
-  ranked <- make_rank(test_df)
+  ranked <- make_rank(test_df, "snp_exposure", "r2_proxy")
   proxy_alone <- ranked |>
     extract_unique_optimal_proxy() |>
     select_only_proxies()
@@ -129,7 +129,7 @@ test_that("remove_optimal_proxies works", {
 
 test_that("filter_optimal_proxy works on the second iteration", {
   # setup
-  base_df <- make_rank(test_df)
+  base_df <- make_rank(test_df, "snp_exposure", "r2_proxy")
 
   first_optimals <- base_df |>
     extract_unique_optimal_proxy() |>

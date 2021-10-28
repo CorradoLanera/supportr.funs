@@ -1,15 +1,39 @@
-#' Ranking
+#' For each SNP, rank the proxies based on their correlations measured
+#' with r2
 #'
-#' @return
+#' @param data (data.frame) the data containing SNPs and proxies
+#' @param snp_exposure (character) a character containing the name of
+#'                                 the SNPs (rs number or chromosome:
+#'                                 position) that need a proxy
+#' @param r2_proxy (double) the correlation between the SNP and its
+#'                          proxy measure with r2
+#'
+#' @return an object of class tibble
 #' @export
 #'
 #' @examples
-make_rank <- function(x) {
-  x |>
+#'
+#' \dontrun{
+#'
+#' test_df |>
+#'   make_rank()
+#'
+#' }
+#'
+#'
+#'
+make_rank <- function(data, snp_exposure, r2_proxy) {
+
+  assertive::assert_is_data.frame(data)
+  assertive::assert_is_character(snp_exposure)
+  assertive::assert_is_character(r2_proxy)
+
+  data |>
     dplyr::with_groups(
-      snp_exposure,
+      .data[[snp_exposure]],
       dplyr::mutate,
-      proxy_rank = dplyr::min_rank(1 - r2_proxy))
+      proxy_rank = dplyr::min_rank(1 - .data[[r2_proxy]]))
+
 }
 
 
