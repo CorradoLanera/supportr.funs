@@ -2,13 +2,33 @@
 % Please edit documentation in R/funs.R
 \name{pick_unique_proxy}
 \alias{pick_unique_proxy}
-\title{Title}
+\title{Pick unique proxy}
 \usage{
-pick_unique_proxy(x)
+pick_unique_proxy(data, snp_exposure)
+}
+\arguments{
+\item{data}{(data.frame) the data containing SNPs and proxies obtained
+after \code{filter_optimal_proxies}}
+
+\item{snp_exposure}{(character) the name of the column in \code{data} that
+contains the SNP (either rs number or
+chromosome:position)}
 }
 \value{
-
+an object of class tibble
 }
 \description{
-Title
+For each SNP, retrieved just one proxy among the most correlated
+}
+\examples{
+
+\dontrun{
+
+test_df |>
+  make_rank("snp_exposure", "r2_proxy") |>
+  filter_optimal_proxies("snp_proxy", "pval_exposure") |>
+  pick_unique_proxz("snp_exposure")
+
+}
+
 }

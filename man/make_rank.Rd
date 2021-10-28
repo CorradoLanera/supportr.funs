@@ -2,13 +2,37 @@
 % Please edit documentation in R/funs.R
 \name{make_rank}
 \alias{make_rank}
-\title{Ranking}
+\title{Rank the proxies based on their correlations}
 \usage{
-make_rank(x)
+make_rank(data, snp_exposure, r2_proxy)
+}
+\arguments{
+\item{data}{(data.frame) the data containing SNPs and proxies}
+
+\item{snp_exposure}{(character) the name of the column in \code{data} that
+contains the SNP (either rs number or
+chromosome:position)}
+
+\item{r2_proxy}{(double) the name of the column in \code{data} that
+contains the correlation between the SNP
+and its proxy measure with r2}
 }
 \value{
-
+an object of class tibble
 }
 \description{
-Ranking
+For each SNP, rank the proxies based on their correlations measured
+with r2
+}
+\examples{
+
+\dontrun{
+
+test_df |>
+  make_rank("snp_exposure", "r2_proxy")
+
+}
+
+
+
 }

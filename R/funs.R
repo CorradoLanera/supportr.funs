@@ -255,7 +255,7 @@ remove_optimal_proxies <- function(
       by = snp_exposure
     ) |>
     dplyr::anti_join(
-      .optimal[snp_outcome_proxy],
+      .optimal[snp_proxy],
       by = snp_proxy
     )
 }

@@ -70,8 +70,8 @@ test_that("extract_unique_optimal_proxy works as a shortcut", {
   # setup
   ranked <- make_rank(test_df, "snp_exposure", "r2_proxy")
   expected <-  ranked |>
-    filter_optimal_proxy("snp_proxy", "pval_exposure") |>
-    pick_unique_proxy()
+    filter_optimal_proxies("snp_proxy", "pval_exposure") |>
+    pick_unique_proxy("snp_exposure")
 
   # execution
   obtained <- ranked |>
@@ -98,7 +98,7 @@ test_that("select_only_proxies works", {
   # test
   expect_named(
     proxy_alone,
-    c("snp_exposure", "snp_outcome_proxy", "proxy_rank")
+    c("snp_exposure", "snp_proxy", "proxy_rank")
   )
 })
 
@@ -130,8 +130,8 @@ test_that("remove_optimal_proxies works", {
     expect_length(0)
 
   intersect(
-    proxy_alone[["snp_outcome_proxy"]],
-    res[["snp_outcome_proxy"]]
+    proxy_alone[["snp_proxy"]],
+    res[["snp_proxy"]]
   ) |>
     expect_length(0)
 })
