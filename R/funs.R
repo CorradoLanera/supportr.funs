@@ -19,7 +19,7 @@
 #' \dontrun{
 #'
 #' test_df |>
-#'   make_rank()
+#'   make_rank("snp_exposure", "r2_proxy")
 #'
 #' }
 #'
@@ -45,12 +45,28 @@ make_rank <- function(data, snp_exposure, r2_proxy) {
 #' For each SNP, filter the proxies with the highest correlations
 #' measured with r2
 #'
-#' @param x
+#' @param data (data.frame) the data containing SNPs and proxies
+#' @param snp_proxy (character) the name of the column in `data` that
+#'                              contains the names of the proxies (
+#'                              either rs number of chromosome:position)
+#' @param pval_exposure (character) the name of the column in `data` that
+#'                                  contains the p-value for the
+#'                                  association between the SNP and the
+#'                                  exposure
 #'
-#' @return
+#' @return an object of class tibble
 #' @export
 #'
 #' @examples
+#'
+#' \dontrun{
+#'
+#' test_df |>
+#'   make_rank("snp_exposure", "r2_proxy") |>
+#'   filter_optimal_proxies("snp_proxy", "pval_exposure")
+#'
+#' }
+#'
 filter_optimal_proxies <- function(
   data, snp_proxy, pval_exposure
 ) {
@@ -62,7 +78,7 @@ filter_optimal_proxies <- function(
   message("!!! RESTART FROM HERE !!!")
   # current_min_rank <- min(x[["proxy_rank"]])
 
-  x |>
+  data |>
     dplyr::with_groups(
       .data[[snp_proxy]],
       dplyr::filter,
@@ -73,14 +89,35 @@ filter_optimal_proxies <- function(
 
 
 
-#' Title
+#' Pick unique proxy
 #'
-#' @return
+#' For each SNP, retrieved just one proxy among the most correlated
+#'
+#' @param data (data.frame) the data containing SNPs and proxies
+#' @param snp_exposure (character) the name of the column in `data` that
+#'                                 contains the SNP (either rs number or
+#'                                 chromosome:position)
+#'
+#' @return an object of class tibble
 #' @export
 #'
 #' @examples
-pick_unique_proxy <- function(x) {
-  x |>
+#'
+#' \dontrun{
+#'
+#' test_df |>
+#'   make_rank("snp_exposure", "r2_proxy") |>
+#'   filter_optimal_proxies("snp_proxy", "pval_exposure") |>
+#'   pick_unique_proxz("snp_exposure")
+#'
+#' }
+#'
+pick_unique_proxy <- function(data, snp_exposure) {
+
+  assertive::assert_is_data.frame(data)
+  assertive::assert_is_character(snp_exposure)
+
+  data |>
     dplyr::distinct(snp_exposure, .keep_all = TRUE)
 }
 
