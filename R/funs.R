@@ -1,4 +1,4 @@
-#' Title
+#' Ranking
 #'
 #' @return
 #' @export
