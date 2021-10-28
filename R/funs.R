@@ -51,7 +51,14 @@ make_rank <- function(data, snp_exposure, r2_proxy) {
 #' @export
 #'
 #' @examples
-filter_optimal_proxy <- function(data, snp_outcome_proxy, pval_e) {
+filter_optimal_proxy <- function(
+  data, snp_proxy, pval_exposure
+) {
+
+  assertive::assert_is_data.frame(data)
+  assertive::assert_is_character(snp_proxy)
+  assertive::assert_is_character(pval_exposure)
+
   message("!!! RESTART FROM HERE !!!")
   # current_min_rank <- min(x[["proxy_rank"]])
 
