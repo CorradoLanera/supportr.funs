@@ -156,7 +156,10 @@ pick_unique_proxy <- function(data, snp_exposure) {
 #' }
 #'
 extract_unique_optimal_proxy <- function(
-  data, snp_proxy, pval_exposure, snp_exposure
+  data,
+  snp_exposure = Sys.getenv("DBPROXY_SNP_EXPOSURE_varname"),
+  snp_proxy = Sys.getenv("DBPROXY_SNP_PROXY_varname"),
+  pval_exposure = Sys.getenv("DBPROXY_PVAL_EXPOSURE_varname")
 ) {
 
   assertive::assert_is_data.frame(data)
@@ -240,13 +243,17 @@ select_snps_and_proxies <- function(data) {
 #' }
 #'
 remove_optimal_proxies <- function(
-  .from, .optimal, snp_exposure, snp_proxy
+  .from, .optimal,
+  snp_exposure = Sys.getenv("DBPROXY_SNP_EXPOSURE_varname"),
+  snp_proxy = Sys.getenv("DBPROXY_SNP_PROXY_varname")
 ) {
 
   assertive::assert_is_data.frame(.from)
   assertive::assert_is_data.frame(.optimal)
   assertive::assert_is_character(snp_exposure)
   assertive::assert_is_character(snp_proxy)
+
+  message("current var is: ", snp_exposure)
 
   .from |>
     dplyr::anti_join(

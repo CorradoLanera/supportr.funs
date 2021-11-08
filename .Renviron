@@ -1,0 +1,4 @@
+DBPROXY_SNP_EXPOSURE_varname = "snp_exposure"
+DBPROXY_SNP_PROXY_varname = "snp_proxy"
+DBPROXY_PVAL_EXPOSURE_varname = "pval_exposure"
+DBPROXY_R2PROXY_varname = "r2_proxy"

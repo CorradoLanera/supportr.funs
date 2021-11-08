@@ -29,7 +29,7 @@ ranked <- test_df |>
 
 rank_1 <- ranked |>
   extract_unique_optimal_proxy() |>
-  select_only_proxies()
+  select_snps_and_proxies()
 
 
 ranked |>
