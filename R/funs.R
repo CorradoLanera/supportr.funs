@@ -76,14 +76,13 @@ filter_optimal_proxies <- function(
   assertive::assert_is_character(snp_proxy)
   assertive::assert_is_character(pval_exposure)
 
-  message("!!! RESTART FROM HERE !!!")
-  # current_min_rank <- min(x[["proxy_rank"]])
+  current_min_rank <- min(data[["proxy_rank"]])
 
   data |>
     dplyr::with_groups(
       .data[[snp_proxy]],
       dplyr::filter,
-      proxy_rank == 1, # current_min_rank,
+      proxy_rank == current_min_rank,
       pval_exposure == min(.data[[pval_exposure]])
     )
 }

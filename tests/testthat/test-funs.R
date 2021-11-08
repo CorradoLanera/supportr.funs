@@ -146,9 +146,11 @@ test_that("filter_optimal_proxy works on the second iteration", {
       "snp_proxy", "pval_exposure", "snp_exposure"
     ) |>
     select_snps_and_proxies()
-  first_df <- remove_optimal_proxies(
-    base_df, first_optimals, "snp_proxy", "snp_exposure"
-  )
+
+  first_df <- base_df |>
+    remove_optimal_proxies(
+      first_optimals, "snp_proxy", "snp_exposure"
+    )
 
 
   # execution
@@ -157,13 +159,13 @@ test_that("filter_optimal_proxy works on the second iteration", {
       "snp_proxy", "pval_exposure", "snp_exposure"
     ) |>
     select_snps_and_proxies()
-  second_df <- remove_optimal_proxies(
-    first_df, second_optimals, "snp_proxy", "snp_exposure"
-  )
 
   # test
-  expect_s3_class(second_df, "tbl_df")
-  expect_named(second_df, names(base_df))
+  expect_s3_class(second_optimals, "tbl_df")
+  expect_named(second_optimals, names(first_optimals))
 
-  expect_equal(second_df[["snp_exposure"]], character())
+  expect_equal(
+    second_optimals[["snp_exposure"]],
+    "rs10356"
+  )
 })
