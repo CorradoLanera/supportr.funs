@@ -10,9 +10,11 @@ Depends:
     R (>= 2.10)
 Imports: 
     tibble,
-    dplyr
+    dplyr,
+    rlang (>= 0.4.11)
 Suggests: 
     assertive,
+    roxygen2,
     devtools,
     markdown,
     rmarkdown,

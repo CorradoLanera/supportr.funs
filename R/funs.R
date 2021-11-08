@@ -82,7 +82,7 @@ filter_optimal_proxies <- function(
     dplyr::with_groups(
       .data[[snp_proxy]],
       dplyr::filter,
-      proxy_rank == current_min_rank,
+      .data[["proxy_rank"]] == current_min_rank,
       pval_exposure == min(.data[[pval_exposure]])
     )
 }
@@ -199,7 +199,7 @@ select_snps_and_proxies <- function(data) {
   assertive::assert_is_data.frame(data)
 
   data |>
-    dplyr::select(dplyr::starts_with("snp"), proxy_rank)
+    dplyr::select(dplyr::starts_with("snp"), .data[["proxy_rank"]])
 }
 
 
