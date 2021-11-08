@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - "20211025-db_devolop"
+      - "20211025-db_develop"
   pull_request:
     branches:
       - "20211025-db_develop"
