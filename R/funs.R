@@ -25,7 +25,11 @@
 #'
 #'
 #'
-make_rank <- function(data, snp_exposure, r2_proxy) {
+make_rank <- function(
+  data,
+  snp_exposure = Sys.getenv("DBPROXY_SNP_EXPOSURE_varname"),
+  r2_proxy = Sys.getenv("DBPROXY_R2PROXY_varname")
+) {
 
   assertive::assert_is_data.frame(data)
   assertive::assert_is_character(snp_exposure)
