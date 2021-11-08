@@ -13,7 +13,7 @@ test_df <- tibble(
     rep(0.10, 2L),
     rep(0.001, 5L)
   ),
-  snp_outcome_proxy = c(
+  snp_proxy = c(
     "rs1084", "rs987", "rs76544",
     "rs1084", "rs987", "rs9083", "rs8754",
     "rs1084", "rs987",

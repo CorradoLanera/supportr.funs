@@ -2,7 +2,7 @@ test_that("make_rank works in a standard environment", {
   # setup
 
   # execution
-  ranked <- make_rank(test_df)
+  ranked <- make_rank(test_df, "snp_exposure", "r2_proxy")
   res <- ranked |>
     dplyr::filter(snp_exposure == "rs14658") |>
     dplyr::pull(proxy_rank)
@@ -16,7 +16,7 @@ test_that("make_rank works with possible var name clashes", {
   r2_proxy <- 1
 
   # execution
-  ranked <- make_rank(test_df)
+  ranked <- make_rank(test_df, "snp_exposure", "r2_proxy")
   res <- ranked |>
     dplyr::filter(snp_exposure == "rs14658") |>
     dplyr::pull(proxy_rank)
@@ -30,10 +30,12 @@ test_that("make_rank works with possible var name clashes", {
 
 test_that("filter_optimal_proxy works", {
   # setup
-  ranked <- make_rank(test_df)
+  ranked <- make_rank(test_df, "snp_exposure", "r2_proxy")
 
   # execution
-  filtered <- filter_optimal_proxy(ranked)
+  filtered <- filter_optimal_proxies(
+    ranked, "snp_proxy", "pval_exposure"
+  )
   proxy_rank <- filtered[["proxy_rank"]]
 
   # test
@@ -52,11 +54,11 @@ test_that("filter_optimal_proxy works", {
 test_that("pick_unique_proxy works", {
   # setup
   filtered <- test_df |>
-    make_rank() |>
-    filter_optimal_proxy()
+    make_rank("snp_exposure", "r2_proxy") |>
+    filter_optimal_proxies("snp_proxy", "pval_exposure")
 
   # execution
-  distinct_proxy <- pick_unique_proxy(filtered)
+  distinct_proxy <- pick_unique_proxy(filtered, "snp_exposure")
   snp_exposure_extracted <- distinct_proxy[["snp_exposure"]]
 
   # test
@@ -66,14 +68,16 @@ test_that("pick_unique_proxy works", {
 
 test_that("extract_unique_optimal_proxy works as a shortcut", {
   # setup
-  ranked <- make_rank(test_df)
+  ranked <- make_rank(test_df, "snp_exposure", "r2_proxy")
   expected <-  ranked |>
-    filter_optimal_proxy() |>
-    pick_unique_proxy()
+    filter_optimal_proxies("snp_proxy", "pval_exposure") |>
+    pick_unique_proxy("snp_exposure")
 
   # execution
   obtained <- ranked |>
-    extract_unique_optimal_proxy()
+    extract_unique_optimal_proxy(
+      "snp_proxy", "pval_exposure", "snp_exposure"
+    )
 
   # test
   expect_equal(expected, obtained)
@@ -83,16 +87,18 @@ test_that("extract_unique_optimal_proxy works as a shortcut", {
 
 test_that("select_only_proxies works", {
   # setup
-  unique_proxy_df <- make_rank(test_df) |>
-    extract_unique_optimal_proxy()
+  unique_proxy_df <- make_rank(test_df, "snp_exposure", "r2_proxy") |>
+    extract_unique_optimal_proxy(
+      "snp_proxy", "pval_exposure", "snp_exposure"
+    )
 
   # execution
-  proxy_alone <- select_only_proxies(unique_proxy_df)
+  proxy_alone <- select_snps_and_proxies(unique_proxy_df)
 
   # test
   expect_named(
     proxy_alone,
-    c("snp_exposure", "snp_outcome_proxy", "proxy_rank")
+    c("snp_exposure", "snp_proxy", "proxy_rank")
   )
 })
 
@@ -100,13 +106,17 @@ test_that("select_only_proxies works", {
 
 test_that("remove_optimal_proxies works", {
   # setup
-  ranked <- make_rank(test_df)
+  ranked <- make_rank(test_df, "snp_exposure", "r2_proxy")
   proxy_alone <- ranked |>
-    extract_unique_optimal_proxy() |>
-    select_only_proxies()
+    extract_unique_optimal_proxy(
+      "snp_proxy", "pval_exposure", "snp_exposure"
+    ) |>
+    select_snps_and_proxies()
 
   # exectution
-  res <- remove_optimal_proxies(ranked, proxy_alone)
+  res <- remove_optimal_proxies(
+    ranked, proxy_alone, "snp_proxy", "snp_exposure"
+  )
 
   # test
   expect_s3_class(res, "tbl_df")
@@ -120,8 +130,8 @@ test_that("remove_optimal_proxies works", {
     expect_length(0)
 
   intersect(
-    proxy_alone[["snp_outcome_proxy"]],
-    res[["snp_outcome_proxy"]]
+    proxy_alone[["snp_proxy"]],
+    res[["snp_proxy"]]
   ) |>
     expect_length(0)
 })
@@ -129,19 +139,27 @@ test_that("remove_optimal_proxies works", {
 
 test_that("filter_optimal_proxy works on the second iteration", {
   # setup
-  base_df <- make_rank(test_df)
+  base_df <- make_rank(test_df, "snp_exposure", "r2_proxy")
 
   first_optimals <- base_df |>
-    extract_unique_optimal_proxy() |>
-    select_only_proxies()
-  first_df <- remove_optimal_proxies(base_df, first_optimals)
+    extract_unique_optimal_proxy(
+      "snp_proxy", "pval_exposure", "snp_exposure"
+    ) |>
+    select_snps_and_proxies()
+  first_df <- remove_optimal_proxies(
+    base_df, first_optimals, "snp_proxy", "snp_exposure"
+  )
 
 
   # execution
   second_optimals <- first_df |>
-    extract_unique_optimal_proxy() |>
-    select_only_proxies()
-  second_df <- remove_optimal_proxies(first_df, second_optimals)
+    extract_unique_optimal_proxy(
+      "snp_proxy", "pval_exposure", "snp_exposure"
+    ) |>
+    select_snps_and_proxies()
+  second_df <- remove_optimal_proxies(
+    first_df, second_optimals, "snp_proxy", "snp_exposure"
+  )
 
   # test
   expect_s3_class(second_df, "tbl_df")
