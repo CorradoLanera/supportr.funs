@@ -6,7 +6,7 @@ on:
     branches:
       - "20211025-db_develop"
 
-name: R-CMD-check
+name: R-CMD-check-develop
 # updated (cache@v1 to cache@v2) from https://github.com/r-lib/actions/blob/master/examples/pkgdown.yaml
 # updated (to support {renv}) from https://rstudio.github.io/renv/articles/ci.html#github-actions
 
